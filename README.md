@@ -224,6 +224,91 @@ for (int i = 0; i < 81-biaozhi; i++)
 
 int main(int argc, char * argv[])
 {
+string a, b;//a存放第一个参数，b存放第二个参数
+	a = argv[1];
+	b = argv[2];
+	
+	int num = 0;
+	if (argc != 3)
+	{
+file1 << "输入正确数量参数！" << endl;
+file1.close();
+	}
+		
+	else
+	{
+		if (a[1] == 'c')//如果输入的指令是-c
+		{
+			int flag = 0;//flag用来标志输入是否合法
+			for (int i = 0; i < b.length(); i++)
+			{
+				if (b[i] - '0' < 0 || b[i] - '9'>0 || i > 6)
+				{
+					flag = 1;//除了我们要生成格局数的大小我们没有确定之外，其他非法情况都已经剔除
+				}
+
+			}
+			if (flag == 0)
+			{
+				int j = b.length() - 1;
+
+				for (int i = 0; i < b.length(); i++)
+				{
+					num += (b[i] - '0') * pow(10, j);//num 就是我们要生成的格局数
+					j--;
+
+				}
+				if (num > 1000000)
+				{
+					flag = 1;
+				}
+			}
+			if (flag == 1)
+				cout << "输入参数错误！" << endl;
+			else//如果我们输入的参数是正确的，那么我们就可以生成格局了，我的学号尾号计算得4
+			{
+				//ofstream file1("终局.txt");
+				file1 << num<< "\n";
+				tianshu(1, 0, num);
+				
+			}file1.close();
+		}
+		if (a[1] == 's')
+		{ifstream file2(b);ofstream file4("解.txt");
+		//ofstream file4("解.txt");
+			while (!file2.eof())
+			{
+				for (int i = 0; i < 81; i++)
+				{
+					file2 >> question[i / 9][i % 9];
+						
+				}
+				int flag1 = 0;
+				int i, j;
+				for (i = 0; i < 9; i++)
+				{
+					for (j = 0; j < 9; j++)
+					{
+						if (question[i][j] == 0)
+						{
+							flag1 = 1;
+							break;
+						}
+
+					}
+					if (flag1 == 1)
+						break;
+				}
+				Qnum = 0;
+				jieti(j, i,file4);
+				
+				
+			}
+
+file2.close();
+file4.close();
+		}
+	}	
 }
 
 ```
