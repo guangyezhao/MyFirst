@@ -4,8 +4,9 @@
 # 算法介绍
 ## 回溯 不管是生成终局还是求解问题 都是用到了回溯
 ```
-# MyFirst
-软件工程作业
+// 数独工程.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
 #include "pch.h"
 #include <iostream>
 #include<math.h>
@@ -14,8 +15,9 @@
 #include<fstream>
 #include<time.h>
 #include<stdlib.h>
+
 using namespace std;
-ofstream file1("终局.txt");
+//ofstream file1("终局.txt");
 int a[9][9] = {4,0};//a里存放了每次我们查看终局里每个空的候选值
 int zhongju[9][9] = {4,0};
 int Line=0;//行
@@ -66,9 +68,9 @@ int check(int row, int line,int *templ)//检查函数，查看这个点填上这
 	}
 	return j;
 }
-static int num=0;//已经生成的终局
+static int Znum=0;//已经生成的终局
 static int flag = 1;
-void Print(int x[9][9])
+/*void Print(int x[9][9])
 {//ofstream file1("终局.txt");
 	for (int i = 0; i < 9; i++)
 	{
@@ -80,7 +82,7 @@ void Print(int x[9][9])
 	}
 	file1<<"\n";
 	//file1.close();
-}
+}*/
 void Print2(int x[9][9],ofstream &file4)
 {//ofstream file1("终局.txt");
 	//ofstream file4("解.txt");
@@ -95,12 +97,12 @@ void Print2(int x[9][9],ofstream &file4)
 	file4 << "\n";
 	//file4.close();
 }
-void tianshu(int row,int line,int sum)//,row line==next
+void tianshu(int row,int line,int sum,ofstream &file1)//,row line==next
 {
 	//ofstream file1("终局.txt");
 	int templ[9] = {0};//模板，每次清0，查看是否十个数都已经遍历过
 	int sym =check(row, line, templ);
-		int i;
+		int i,j,i1,i2,j2,j3,j1;
 		while (sym--)
 		{
 			for (i = 0; i < 9; i++)
@@ -116,24 +118,207 @@ void tianshu(int row,int line,int sum)//,row line==next
 		{
 			if (line==8)
 			{
-				Print(zhongju);
-					num++;
-					if (num == sum)
+				//Print(zhongju);
+					//num++;
+					if (Znum == sum)
 						flag = 0;
+					//接下来是进行代码改进
+					int hang[9] = { 0,1,2,3,4,5,6,7,8 }, lie[9] = {0,1,2,3,4,5,6,7,8};//这两个数组可以帮助我们制作出更多的矩阵！刚开始都是默认的顺序
+					for (i = 1; i <=2; i++)
+					{
+						if (flag == 0)
+							break;						
+						for (j = 0; j <= 2; j++)
+						{
+							if (i != 0 && j == 0)
+								continue;
+							if (flag == 0)
+								break;
+							for (int spec = 1; spec <= 2; spec++)
+							{
+								hang[spec] = spec;
+							}
+							if (((i + j) % 3) < (i % 3))
+							{
+								break;
+							}
+							else
+							{
+								int h;//容器
+								h = hang[i];
+								hang[i] = hang[i + j];
+								hang[i + j] = h;
+								for (i1 = 0; i1 <= 2; i1++)
+								{
+									if (flag == 0)
+										break;									
+									for (j1 = 0; j1 <= 2; j1++)
+									{
+										if (i1 != 0 && j1 == 0)
+											continue;
+										if (flag == 0)
+											break;
+										for (int spec = 0; spec <= 2; spec++)
+										{
+											hang[3+spec] = 3+spec;
+										}
+										if (((i1 + j1) % 3) < (i1 % 3))
+										{
+											break;
+										}
+										else
+										{
+											h = hang[3+i1];
+											hang[3+i1] = hang[3+i1 + j1];
+											hang[3+i1 + j1] = h;
+											for (i2 = 0; i2 <= 2; i2++)
+											{
+												if (flag == 0)
+													break;												
+												for (j3 = 0; j3 <= 2; j3++)
+												{
+													if (i2 != 0 && j3 == 0)
+														continue;
+													if (flag == 0)
+														break;
+													/*for (int spec = 0; spec <= 2; spec++)
+													{
+														hang[6+spec] = 6+spec;
+													}*/
+													if (((i2 + j3) % 3) < (i2 % 3))
+													{
+														break;
+													}
+													else
+													{
+												        //行的变换结束了，接下来是列的变换
+														int h;//容器
+														h = lie[i2];
+														lie[i2] = lie[i2 + j3];
+														lie[i2 + j3] = h;
+														for (i = 1; i <= 2; i++)
+														{
+															if (flag == 0)
+																break;															
+															for (j = 0; j <= 2; j++)
+															{
+																if (i != 0 && j == 0)
+																	continue;
+																if (flag == 0)
+																	break;
+																for (int spec = 1; spec <= 2; spec++)
+																{
+																	lie[spec] = spec;
+																}
+																if (((i + j) % 3) < (i % 3))
+																{
+																	break;
+																}
+																else
+																{
+																	int h;//容器
+																	h = lie[i];
+																	lie[i] = lie[i + j];
+																    lie[i + j] = h;
+																	for ( i1 = 0; i1 <= 2; i1++)
+																	{
+																		if (flag == 0)
+																			break;																		
+																		for (j1 = 0; j1 <= 2; j1++)
+																		{
+																			if (i1 != 0 && j1 == 0)
+																				continue;
+																			if (flag == 0)
+																				break;
+																			for (int spec = 0; spec <= 2; spec++)
+																			{
+																				lie[3 + spec] = 3 + spec;
+																			}
+																			if (((i1 + j1) % 3) < (i1 % 3))
+																			{
+																				break;
+																			}
+																			else
+																			{
+																				h = lie[3 + i1];
+																				lie[3 + i1] = lie[3 + i1 + j1];
+																				lie[3 + i1 + j1] = h;
+																				for ( i2 = 0; i2 <= 2; i2++)
+																				{
+																					if (flag == 0)
+																						break;
+																					for (j3 = 0; j3 <= 2; j3++)
+																					{
+																						if (i2 != 0 && j3 == 0)
+																							continue;
+
+																						if (flag == 0)
+																							break;
+																						for (int spec = 0; spec <= 2; spec++)
+																						{
+																							lie[6 + spec] = 6 + spec;
+																						}
+																						if (((i2 + j3) % 3) <(i2 % 3))
+																						{
+																							break;
+																						}
+																						else
+																						{
+																							h = lie[6+i2];
+																							lie[6+i2] = lie[6+i2 + j3];
+																							lie[6+i2 + j3] = h;
+																							for (int drawline = 0; drawline < 9; drawline++)
+																							{
+																								for (int drawrow = 0; drawrow < 9; drawrow++)
+																								{
+																									file1 << zhongju[hang[drawline]][lie[drawrow]]<<" ";
+																									
+																								}
+																								
+																								file1 << "\n";
+																							}
+																							file1 << "\n";
+																							Znum++;
+																							if (Znum == sum)
+																								flag = 0;
+																							/*for (int drawline = 0; drawline < 9; drawline++)
+																							{
+																								hang[drawline] = drawline;
+																								lie[drawline] = drawline;
+																								
+																							}*/
+																						}
+																					}
+																				}
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
 					return;
 			}
 			else
 			{
 				//row = 0;
 				//line++;
-				tianshu(0, line+1,sum);
+				tianshu(0, line+1,sum,file1);
 				i = 0;
 			}
 		}
 		else
 		{
 			//row++;
-			tianshu(row+1, line,sum);
+			tianshu(row+1, line,sum,file1);
 			i = 0;
 		}
 			if (flag == 0)
@@ -225,6 +410,7 @@ for (int i = 0; i < 81-biaozhi; i++)
 
 int main(int argc, char * argv[])
 {
+	
 string a, b;//a存放第一个参数，b存放第二个参数
 	a = argv[1];
 	b = argv[2];
@@ -232,6 +418,7 @@ string a, b;//a存放第一个参数，b存放第二个参数
 	int num = 0;
 	if (argc != 3)
 	{
+		ofstream file1("终局.txt");
 file1 << "输入正确数量参数！" << endl;
 file1.close();
 	}
@@ -267,12 +454,13 @@ file1.close();
 			if (flag == 1)
 				cout << "输入参数错误！" << endl;
 			else//如果我们输入的参数是正确的，那么我们就可以生成格局了，我的学号尾号计算得4
-			{
+			{ofstream file1("终局.txt");
 				//ofstream file1("终局.txt");
 				file1 << num<< "\n";
-				tianshu(1, 0, num);
 				
-			}file1.close();
+				tianshu(1, 0, num,file1);
+				file1.close();
+			}
 		}
 		if (a[1] == 's')
 		{ifstream file2(b);ofstream file4("解.txt");
@@ -310,6 +498,46 @@ file2.close();
 file4.close();
 		}
 	}	
-}
+/*	ifstream file2("C:\\Users\\59111\\source\\repos\\数独工程\\Debug\\问题.txt"); ofstream file4("解.txt");
+	//ofstream file4("解.txt");
+	while (!file2.eof())
+	{
+		for (int i = 0; i < 81; i++)
+		{
+			file2 >> question[i / 9][i % 9];
 
+		}
+		int flag1 = 0;
+		int i, j;
+		for (i = 0; i < 9; i++)
+		{
+			for (j = 0; j < 9; j++)
+			{
+				if (question[i][j] == 0)
+				{
+					flag1 = 1;
+					break;
+				}
+
+			}
+			if (flag1 == 1)
+				break;
+		}
+		Qnum = 0;
+		jieti(j, i, file4);
+		file4 << "**";
+
+	}
+
+	file2.close();
+	file4.close();*/
+/*ofstream file1("终局.txt");
+int num;
+cin >> num;
+//ofstream file1("终局.txt");
+file1 << num << "\n";
+
+tianshu(1, 0, num, file1);
+file1.close();*/
+}
 ```
