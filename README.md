@@ -4,8 +4,12 @@
 # 算法介绍
 ## 回溯 不管是生成终局还是求解问题 都是用到了回溯
 ```
-# MyFirst
-软件工程作业
+// 数独工程.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
+// 数独工程.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
 #include "pch.h"
 #include <iostream>
 #include<math.h>
@@ -14,14 +18,18 @@
 #include<fstream>
 #include<time.h>
 #include<stdlib.h>
+
 using namespace std;
-ofstream file1("终局.txt");
-int a[9][9] = {4,0};//a里存放了每次我们查看终局里每个空的候选值
-int zhongju[9][9] = {4,0};
-int Line=0;//行
-int Row=1;//列
+int *hang[10] ;
+FILE *file1;
+//fopen_s(&file1, "终局.txt", "w");
+//ofstream file1("终局.txt");
+int a[9][9] = { 4,0 };//a里存放了每次我们查看终局里每个空的候选值
+int zhongju[9][9] = { 4,0 };
+int Line = 0;//行
+int Row = 1;//列
 int question[9][9] = { 0 };
-int check(int row, int line,int *templ)//检查函数，查看这个点填上这个数字之后满足不满足要求
+int check(int row, int line, int *templ)//检查函数，查看这个点填上这个数字之后满足不满足要求
 {
 	int blocklinenum, blockrownum;
 	blocklinenum = line / 3;//块行数
@@ -66,7 +74,7 @@ int check(int row, int line,int *templ)//检查函数，查看这个点填上这
 	}
 	return j;
 }
-static int num=0;//已经生成的终局
+static int Znum = 0;//已经生成的终局
 static int flag = 1;
 void Print(int x[9][9])
 {//ofstream file1("终局.txt");
@@ -74,14 +82,18 @@ void Print(int x[9][9])
 	{
 		for (int j = 0; j < 9;j++)
 		{
-			file1<< x[i][j]<<" ";
-	    }
-		file1<<"\n";	
+			//file1<< x[i][j]<<" ";
+			fputc(x[i][j] + '0', file1);
+			fputc(' ', file1);
+		}
+		//file1<<"\n";
+		fputc('\n', file1);
 	}
-	file1<<"\n";
+	//file1<<"\n";
+	fputc('\n', file1);
 	//file1.close();
 }
-void Print2(int x[9][9],ofstream &file4)
+void Print2(int x[9][9], ofstream &file4)
 {//ofstream file1("终局.txt");
 	//ofstream file4("解.txt");
 	for (int i = 0; i < 9; i++)
@@ -95,52 +107,73 @@ void Print2(int x[9][9],ofstream &file4)
 	file4 << "\n";
 	//file4.close();
 }
-void tianshu(int row,int line,int sum)//,row line==next
+void tianshu(int row, int line, int sum)//,row line==next
 {
 	//ofstream file1("终局.txt");
-	int templ[9] = {0};//模板，每次清0，查看是否十个数都已经遍历过
-	int sym =check(row, line, templ);
-		int i;
-		while (sym--)
+	int templ[9] = { 0 };//模板，每次清0，查看是否十个数都已经遍历过
+	int sym = check(row, line, templ);
+	int i, j, i1, i2, j2, j3, j1;
+	while (sym--)
+	{
+		for (i = 0; i < 9; i++)
 		{
-			for (i = 0; i < 9; i++)
+			if (templ[i] == 0)
 			{
-				if (templ[i] == 0)
-				{
-        templ[i] = 1;
-		zhongju[line][row] = i + 1;
-		break;
-				}
+				templ[i] = 1;
+				zhongju[line][row] = i + 1;
+				break;
 			}
-			if (row==8)
+		}
+		if (row == 8)
 		{
-			if (line==8)
+			if (line == 8)
 			{
 				Print(zhongju);
-					num++;
-					if (num == sum)
+					Znum++;
+				if (Znum == sum)
+					flag = 0;
+				for (int i = 0; i < 10; i++)
+				{
+					for (int i1 = 0; i1 < 9; i1++)
+					{
+						for (int j1 = 0; j1 < 9; j1++)
+						{
+							//file1 << zhongju[hang[i][i1]][j1] << " ";
+							fputc(zhongju[hang[i][i1]][j1] + '0', file1);
+							fputc(' ', file1);
+						}
+						//file1 << "\n";
+						fputc('\n',file1);
+					}
+					//file1 << "\n";
+					fputc('\n', file1);
+					Znum++;
+					if (Znum == sum)
+					{
 						flag = 0;
-					return;
+						break;
+					}
+				}
 			}
 			else
 			{
 				//row = 0;
 				//line++;
-				tianshu(0, line+1,sum);
+				tianshu(0, line + 1, sum);
 				i = 0;
 			}
 		}
 		else
 		{
 			//row++;
-			tianshu(row+1, line,sum);
+			tianshu(row + 1, line, sum);
 			i = 0;
 		}
-			if (flag == 0)
-				break;
-		}
+		if (flag == 0)
+			break;
+	}
 }
-static int Qnum=0;
+static int Qnum = 0;
 int check2(int row, int line, int *templ2)
 {
 	int blocklinenum, blockrownum;
@@ -150,38 +183,38 @@ int check2(int row, int line, int *templ2)
 	//int innerrownum = row % 3;
 	int startaddline = blocklinenum * 3;//块的起始行地址
 	int startaddrow = blockrownum * 3;//块的起始列地址
-	int i = 0; int j = 0;int sum=0;
+	int i = 0; int j = 0; int sum = 0;
 	sum = startaddline * 9 + startaddrow;
-		for (i = 0; i <= 20; i++)
+	for (i = 0; i <= 20; i++)
+	{
+		int tempsum = sum + i;
+		if (question[tempsum / 9][startaddrow + (tempsum % 3)] != 0)
+			templ2[question[tempsum / 9][startaddrow + tempsum % 3] - 1] = 1;
+	}
+	for (i = 0; i < 9; i++)
+	{
+		if (question[line][i] != 0)
 		{
-		    int tempsum=sum+i;
-			if (question[tempsum / 9][startaddrow+(tempsum % 3)] != 0)
-				templ2[question[tempsum / 9][startaddrow+tempsum % 3] - 1] = 1;
+			templ2[question[line][i] - 1] = 1;
 		}
-		for (i = 0; i < 9; i++)
-		{
-			if (question[line][i] != 0)
-			{
-				templ2[question[line][i] - 1] = 1;
-			}
-			if (question[i][row] != 0)
-				templ2[question[i][row] - 1] = 1;
-		}
-		for (i = 0; i < 9; i++)
-		{
-			if (templ2[i] == 0)
-				j++;
-		}
-		return j;//j代表了我们会有多少的候选值
+		if (question[i][row] != 0)
+			templ2[question[i][row] - 1] = 1;
+	}
+	for (i = 0; i < 9; i++)
+	{
+		if (templ2[i] == 0)
+			j++;
+	}
+	return j;//j代表了我们会有多少的候选值
 }
 
-void jieti(int row,int line,ofstream &file4)//再调用此函数之前必须先找到题目矩阵中，第一个空，并用这个点的参数调用这个函数和
+void jieti(int row, int line, ofstream &file4)//再调用此函数之前必须先找到题目矩阵中，第一个空，并用这个点的参数调用这个函数和
 {//默认输入的所有的题目都是有解的；
 	int numth = line * 9 + row;//我们的起始是第几个空
 	int biaozhi = numth;
 	int flag = 0;
-	int templ2[9] = {0};
-	int sys=check2(row, line, templ2);
+	int templ2[9] = { 0 };
+	int sys = check2(row, line, templ2);
 	if (sys == 0)
 		return;
 	while (sys--)
@@ -195,29 +228,29 @@ void jieti(int row,int line,ofstream &file4)//再调用此函数之前必须先�
 				break;
 			}
 		}
-for (int i = 0; i < 81-biaozhi; i++)
-		//虽然我们在解决问题的时候，我们把这个数组看作是一维的，但是我们的数据还是二维数据。二位数据的检查函数相对来说简单一些
-	{
-		numth =biaozhi+ i;
-		int transline = numth / 9;
-		int transrow = numth % 9;
-		if (question[transline][transrow] == 0)
+		for (int i = 0; i < 81 - biaozhi; i++)
+			//虽然我们在解决问题的时候，我们把这个数组看作是一维的，但是我们的数据还是二维数据。二位数据的检查函数相对来说简单一些
 		{
-			jieti(transrow, transline,file4);
-			flag = 1;
-			break;
+			numth = biaozhi + i;
+			int transline = numth / 9;
+			int transrow = numth % 9;
+			if (question[transline][transrow] == 0)
+			{
+				jieti(transrow, transline, file4);
+				flag = 1;
+				break;
+			}
 		}
-	}
-	if (Qnum != 0)
-	{
-		return;
-	}
-	if (flag == 0)
-	{
-		Print2(question,file4);
-		Qnum++;
-		return;
-	}
+		if (Qnum != 0)
+		{
+			return;
+		}
+		if (flag == 0)
+		{
+			Print2(question, file4);
+			Qnum++;
+			return;
+		}
 	}
 	question[line][row] = 0;
 
@@ -225,17 +258,39 @@ for (int i = 0; i < 81-biaozhi; i++)
 
 int main(int argc, char * argv[])
 {
-string a, b;//a存放第一个参数，b存放第二个参数
+	int hang1[9] = { 0,1,2,3,4,5,6,8,7 };
+	hang[0] = hang1;
+	int hang2[9] = { 0,1,2,3,4,5,8,6,7 };
+	hang[1] = hang2;
+	int hang3[9] = { 0,1,2,3,5,4,6,8,7 };
+	hang[2] = hang3;
+	int hang4[9] = { 0,1,2,4,3,5,8,6,7 };
+	hang[3] = hang4;
+	int hang5[9] = { 0,2,1,3,4,5,6,8,7 };
+	hang[4] = hang5;
+	int hang6[9] = { 0,1,2,5,4,3,8,6,7 };
+	hang[5] = hang6;
+	int hang7[9] = { 0,1,2,3,4,5,6,7,8 };
+	hang[6] = hang7;
+	int hang8[9] = { 0,1,2,4,3,5,7,6,8 };
+	hang[7] = hang8;
+	int hang9[9] = { 0,2,1,3,5,4,6,7,8 };
+	hang[8] = hang9;
+	int hang10[9] = { 0,2,1,3,4,5,6,8,7 };
+	hang[9] = hang10;
+	string a, b;//a存放第一个参数，b存放第二个参数
 	a = argv[1];
 	b = argv[2];
-	
+
 	int num = 0;
 	if (argc != 3)
 	{
-file1 << "输入正确数量参数！" << endl;
-file1.close();
+		ofstream file1;
+		file1.open("终局.txt");
+		file1 << "输入正确数量参数！" << endl;
+		file1.close();
 	}
-		
+
 	else
 	{
 		if (a[1] == 'c')//如果输入的指令是-c
@@ -268,21 +323,27 @@ file1.close();
 				cout << "输入参数错误！" << endl;
 			else//如果我们输入的参数是正确的，那么我们就可以生成格局了，我的学号尾号计算得4
 			{
+				fopen_s(&file1, "终局.txt", "w");
 				//ofstream file1("终局.txt");
-				file1 << num<< "\n";
+				//ofstream file1("终局.txt");
+				//FILE *file1;
+				//fopen_s(&file1, "终局.txt", "w");
+				//file1 << num << "\n";
 				tianshu(1, 0, num);
-				
-			}file1.close();
+				//file1.close();
+				fclose(file1);
+			}
 		}
 		if (a[1] == 's')
-		{ifstream file2(b);ofstream file4("解.txt");
-		//ofstream file4("解.txt");
+		{
+			ifstream file2(b); ofstream file4("解.txt");
+			//ofstream file4("解.txt");
 			while (!file2.eof())
 			{
 				for (int i = 0; i < 81; i++)
 				{
 					file2 >> question[i / 9][i % 9];
-						
+
 				}
 				int flag1 = 0;
 				int i, j;
@@ -301,15 +362,82 @@ file1.close();
 						break;
 				}
 				Qnum = 0;
-				jieti(j, i,file4);
-				
-				
+				jieti(j, i, file4);
+
+
 			}
 
-file2.close();
-file4.close();
+			file2.close();
+			file4.close();
 		}
-	}	
+	}
+	/*	ifstream file2("C:\\Users\\59111\\source\\repos\\数独工程\\Debug\\问题.txt"); ofstream file4("解.txt");
+		//ofstream file4("解.txt");
+		while (!file2.eof())
+		{
+			for (int i = 0; i < 81; i++)
+			{
+				file2 >> question[i / 9][i % 9];
+
+			}
+			int flag1 = 0;
+			int i, j;
+			for (i = 0; i < 9; i++)
+			{
+				for (j = 0; j < 9; j++)
+				{
+					if (question[i][j] == 0)
+					{
+						flag1 = 1;
+						break;
+					}
+
+				}
+				if (flag1 == 1)
+					break;
+			}
+			Qnum = 0;
+			jieti(j, i, file4);
+			file4 << "**";
+
+		}
+
+		file2.close();
+		file4.close();*//*
+int hang1[9] = { 0,1,2,3,4,5,6,8,7 };
+hang[0] = hang1;
+int hang2[9] = { 0,1,2,3,4,5,8,6,7 };
+hang[1] = hang2;
+int hang3[9] = { 0,1,2,3,5,4,6,8,7 };
+hang[2] = hang3;
+int hang4[9] = { 0,1,2,4,3,5,8,6,7 };
+hang[3] = hang4;
+int hang5[9] = { 0,2,1,3,4,5,6,8,7 };
+hang[4] = hang5;
+int hang6[9] = { 0,1,2,5,4,3,8,6,7 };
+hang[5] = hang6;
+int hang7[9] = { 0,1,2,3,4,5,6,7,8 };
+hang[6] = hang7;
+int hang8[9] = { 0,1,2,4,3,5,7,6,8 };
+hang[7] = hang8;
+int hang9[9] = { 0,2,1,3,5,4,6,7,8 };
+hang[8] = hang9;
+int hang10[9] = { 0,2,1,3,4,5,6,8,7 };
+hang[9] = hang10;
+
+		int num=1000000;
+		//cin >> num;
+		//FILE *fp;
+		fopen_s(&file1,"终局.txt", "w");
+
+		//ofstream file1;
+		//file1.open("终局.txt");
+		//file1 << num << "\n";
+		//fputc(num + '0', fp);
+		tianshu(1, 0, num);
+		fclose(file1);
+		*/
 }
+
 
 ```
